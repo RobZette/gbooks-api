@@ -16,7 +16,7 @@ jobs:
       - name: Run the tests
         run: newman run https://api.getpostman.com/collections/fd9ed364-b5b6-4535-9f29-5139c0fb5cf1?apikey=${{ secrets.POSTMAN_API_KEY }} -r cli,htmlextra,junit
 
-        - name: Test Report in XML
+      - name: Test Report in XML
         uses: dorny/test-reporter@v1
         if: success() || failure()
         with:
