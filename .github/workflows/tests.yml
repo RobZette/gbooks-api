@@ -1,11 +1,14 @@
 name: Google books API tests
+
 on: [push, workflow_dispatch]
+
 jobs:
-  Explore-GitHub-Actions:
+  build:
     runs-on: ubuntu-latest
     steps:
+
       - name: Check out repository code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: install newman and htmlextra dependencies 
         run: npm install -g newman -g newman-reporter-htmlextra
@@ -13,12 +16,12 @@ jobs:
       - name: Run the tests
         run: newman run collection.json -r cli,htmlextra,junit
 
-      - uses: actions/upload-artifact@v2  # upload test results
-        if: always()       # run this step even if previous step failed
+      - uses: actions/upload-artifact@v2
+        if: always()
         with:
           name: tests-results
           path: newman/*.xml
-        - uses: actions/upload-artifact@v3
-          with:
-            name: test-rappotr
-            path: newman/*.html
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-rappotr
+          path: newman/*.html
