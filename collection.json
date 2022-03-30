@@ -1,0 +1,1081 @@
+{
+	"info": {
+		"_postman_id": "fd9ed364-b5b6-4535-9f29-5139c0fb5cf1",
+		"name": "Projet 2 - Test Google Books",
+		"description": "## Arcachon City Library Project - Testing Google API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "LIST BOOKS",
+			"item": [
+				{
+					"name": "Get a list of books by title",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// get id to create a collection variable 'bookId'\r",
+									"\r",
+									"let bookId = jsonData.items[0].id;\r",
+									"pm.collectionVariables.set('bookId', bookId);\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check if response title contains the query\", () => {\r",
+									"    // Create a list of response titles and subtitles\r",
+									"    let titles = [];\r",
+									"    jsonData.items.forEach(element => titles.push(`${element.volumeInfo.title} ${element.volumeInfo.subtitle}`))\r",
+									"    console.log(titles)\r",
+									"    console.log(pm.collectionVariables.get(\"title\"))\r",
+									"\r",
+									"    // Loop to check assertion    \r",
+									"    for (let i = 0; i<titles.length; i++) {\r",
+									"        pm.expect(titles[i].toLowerCase()).to.include(pm.collectionVariables.get(\"title\").toLowerCase())\r",
+									"    }   \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Book has all the required fields\", () => {\r",
+									"    jsonData.items.forEach(item => {\r",
+									"\r",
+									"        console.log(\"1 : \" + item.id);\r",
+									"        //Check that the field ID exists and it's a string\r",
+									"        pm.expect(item.id).to.be.a('string');\r",
+									"        pm.expect(item.id).to.not.be.empty;\r",
+									"\r",
+									"        console.log(\"3 : \" + item.volumeInfo.title);\r",
+									"        //Check that the field ID exists and it's a string\r",
+									"        pm.expect(item.volumeInfo.title).to.be.a('string');\r",
+									"        pm.expect(item.volumeInfo.title).to.not.be.empty;\r",
+									"\r",
+									"        console.log(\"5 : \" + item.volumeInfo.industryIdentifiers);\r",
+									"        //Check that the field Identifiers (for ISBN) exists and it's an array\r",
+									"        pm.expect(item.volumeInfo.industryIdentifiers).to.be.an(\"array\");\r",
+									"        pm.expect(item.volumeInfo.industryIdentifiers[0]).to.have.property(\"type\");\r",
+									"    });\r",
+									"    \r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes?q=+intitle:{{title}}&printType=books",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "+intitle:{{title}}"
+								},
+								{
+									"key": "printType",
+									"value": "books"
+								}
+							]
+						},
+						"description": "Given a user  \nWhen he searches a book by title  \nThen the server returns a list of matching books  \nAnd returns code 200  \nAnd the title of the returned books matches with the searched one  \nAnd the schema of the response is ok ( title, author, id, ISBN exist)\n\nSome random API bug"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a list of books by author",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseJson = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"books returned have the author\", function() {",
+									"    console.log(responseJson.items)",
+									"    responseJson.items.forEach(element => console.log(element.volumeInfo.authors))",
+									"    responseJson.items.forEach(element => pm.expect(String(element.volumeInfo.authors).toLowerCase()).to.include(pm.collectionVariables.get('author').toLowerCase()))",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes?q=+inauthor:{{author}}",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "+inauthor:{{author}}"
+								}
+							]
+						},
+						"description": "Given a user  \nWhen he searches a book by author  \nThen the server returns a list of corresponding books  \nAnd returns code 200  \nAnd the author of the returned books matches with the searched one  \nAnd the schema of the response is ok ( title, author, id, ISBN and category exist)\n\nbug API expected"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a list of books by publisher",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//pm.collectionVariables.set('publisher', pm.variables.replaceIn('{{$randomFirstName}}'));"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check if 'not undefined publishers' match with 'request publisher'\", ()=> {\r",
+									"    responseJson.items.map(element => {\r",
+									"        if (element.volumeInfo.publisher !== undefined) {\r",
+									"            pm.expect(element.volumeInfo.publisher.toLowerCase()).to.include(pm.collectionVariables.get(\"publisher\").toLowerCase());\r",
+									"        }    \r",
+									"    })\r",
+									"})\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes?q=inpublisher:{{publisher}}",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "inpublisher:{{publisher}}"
+								}
+							]
+						},
+						"description": "Given a user \nWhen he searches a book by publisher\nThen the server returns a list of corresponding books\nAnd returns code 200\nAnd the publisher of the returned books matches with the searched one\nAnd the schema of the response is ok ( title, author, id, ISBN and category exist)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a list of books by category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseJson = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Books possess the searched category\", function() {\r",
+									"    responseJson.items.forEach(element => pm.expect(String(element.volumeInfo.categories).toLowerCase()).to.include(\"art\"))\r",
+									"});\r",
+									"\r",
+									"\r",
+									"// The Google Books API Documentation explains :\r",
+									"// 'subject: Returns results where the text following this keyword is listed in the category list of the volume.'\r",
+									"\r",
+									"// 1. Count responses\r",
+									"let countResponses = responseJson.items.length\r",
+									"// countResponses = 7\r",
+									"console.log(countResponses)\r",
+									"// 2. Map responses contains category in categories array\r",
+									"// 3. compare lengh of map array and response\r",
+									"\r",
+									"\r",
+									"pm.test(\"check if response categories array includes requested category\", () => {\r",
+									"    // 2. Map responses contains category in categories array\r",
+									"    let categories = [];\r",
+									"\r",
+									"    responseJson.items.forEach(element => {\r",
+									"        console.log(element.volumeInfo.categories)\r",
+									"        if (element.volumeInfo.categories !== undefined && element.volumeInfo.categories.includes('Art')) {\r",
+									"            element.volumeInfo.categories.map(item => {             \r",
+									"                categories.push(item)            \r",
+									"            })\r",
+									"        }            \r",
+									"    })\r",
+									"    console.log(categories)\r",
+									"    \r",
+									"    pm.expect(countResponses).to.eql(categories.length)    \r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes?q=+subject:art&startIndex=7&maxResults=4",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "+subject:art"
+								},
+								{
+									"key": "startIndex",
+									"value": "7"
+								},
+								{
+									"key": "maxResults",
+									"value": "4"
+								}
+							]
+						},
+						"description": "Given a user \nWhen he searches a book by category\nThen the server returns a list of corresponding books\nAnd returns code 200\nAnd the category of the returned books matches with the searched one\nAnd the schema of the response is ok ( title, author, id, ISBN and category exist)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a book by ISBN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseJson = pm.response.json();\r",
+									"\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Verify the ISBN\", () => {\r",
+									"    pm.expect(pm.response.json().IBSN).to.eql(pm.collectionVariables.get(\"ISBN\"))\r",
+									"    console.log(responseJson);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes?q={{ISBN}}",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "{{ISBN}}"
+								}
+							]
+						},
+						"description": "Given a user  \nWhen he searches a book by its ISBN  \nThen the server returns a the corresponding books  \nAnd returns code 200  \nAnd the ISBN of the returned book matches with the searched one  \nAnd the schema of the response is ok ( title, author, id, ISBN and category exist)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a list of books by title and sorted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const expectedDates = [];",
+									"const sortedDates = [];",
+									"let jsonData = pm.response.json();",
+									"",
+									"jsonData.items.forEach(item => expectedDates.push(item.volumeInfo.publishedDate));",
+									"jsonData.items.forEach(item => sortedDates.push(item.volumeInfo.publishedDate));",
+									"sortedDates.sort();",
+									"sortedDates.reverse();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"books are sorted correctly\", () => {",
+									"    console.log(expectedDates);",
+									"    console.log(sortedDates);",
+									"    pm.expect(expectedDates).to.be.eql(sortedDates);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes?q=+intitle:{{title}}&orderBy=newest",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "+intitle:{{title}}"
+								},
+								{
+									"key": "orderBy",
+									"value": "newest"
+								}
+							]
+						},
+						"description": "Given a user  \nWhen he searches a book by title\n\nAnd sort it by newest  \nThen the server returns a list of matching books  \nAnd returns code 200  \nAnd the title of the returned books matches with the searched one  \nAnd the schema of the response is ok ( title, author, id, ISBN and category exist)\n\nAnd the books are correctly sorted\n\n\nbug API expected"
+					},
+					"response": []
+				}
+			],
+			"description": "Testing requests which return a list of book\n\nSearch by :\n\n*   title\n*   author\n*   publisher\n*   category\n*   title and sorted by newest\n*   ISBN",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.collectionVariables.set('title', pm.variables.replaceIn('{{$randomNoun}}'));",
+							"",
+							"pm.collectionVariables.set('author', pm.variables.replaceIn('{{$randomFirstName}}'));",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "GET BOOK",
+			"item": [
+				{
+					"name": "Get a book by its ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"reponse ID checks with request ID\", () => {",
+									"    pm.expect(jsonData.id).to.eql(pm.collectionVariables.get(\"bookId\"))",
+									"})",
+									"",
+									"pm.test(\"Book has all the required fields\", () => {",
+									"    //Check that the field ID exists and it's a string",
+									"    pm.expect(jsonData.id).to.be.a('string');",
+									"    pm.expect(jsonData.id).to.not.be.empty;",
+									"",
+									"    // Check that field authors exist and its an array",
+									"    pm.expect(jsonData.volumeInfo.authors).to.be.a('array');",
+									"    pm.expect(jsonData.volumeInfo.authors).to.not.be.empty;",
+									"",
+									"    //Check that the field ID exists and it's a string",
+									"    pm.expect(jsonData.volumeInfo.title).to.be.a('string');",
+									"    pm.expect(jsonData.volumeInfo.title).to.not.be.empty;",
+									"",
+									"    //Check that the field categories exists and it's an array",
+									"    pm.expect(jsonData.volumeInfo.categories).to.be.an(\"array\");",
+									"    pm.expect(jsonData.volumeInfo.categories).to.not.be.empty;",
+									"",
+									"    //Check that the field Identifiers (for ISBN) exists and it's an array",
+									"    pm.expect(jsonData.volumeInfo.industryIdentifiers).to.be.an(\"array\");",
+									"    pm.expect(jsonData.volumeInfo.industryIdentifiers[0].type).to.eq(\"ISBN_10\");",
+									"    pm.expect(jsonData.volumeInfo.industryIdentifiers[0].identifier).to.be.a(\"string\");",
+									"    pm.expect(jsonData.volumeInfo.industryIdentifiers[1].type).to.eq(\"ISBN_13\");",
+									"    pm.expect(jsonData.volumeInfo.industryIdentifiers[1].identifier).to.be.a(\"string\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes/{{bookId}}",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes",
+								"{{bookId}}"
+							]
+						},
+						"description": "Given a user  \nWhen he searches a book by its ID  \nThen the server returns one element : the corresponding book  \nAnd returns code 200  \nAnd the ID of the returned book matches with the searched one  \nAnd the schema of the response is ok ( title, author, id, ISBN and category exist)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get a book by its ID Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let schema = ",
+									"{",
+									"  \"type\": \"object\",",
+									"  \"properties\": {",
+									"    \"kind\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"id\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"etag\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"selfLink\": {",
+									"      \"type\": \"string\"",
+									"    },",
+									"    \"volumeInfo\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"title\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"authors\": {",
+									"          \"type\": \"array\",",
+									"          \"items\": [",
+									"            {",
+									"              \"type\": \"string\"",
+									"            }",
+									"          ]",
+									"        },",
+									"        \"publisher\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"publishedDate\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"description\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"industryIdentifiers\": {",
+									"          \"type\": \"array\",",
+									"          \"items\": [",
+									"            {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"type\": {",
+									"                  \"type\": \"string\"",
+									"                },",
+									"                \"identifier\": {",
+									"                  \"type\": \"string\"",
+									"                }",
+									"              },",
+									"              \"required\": [",
+									"                \"type\",",
+									"                \"identifier\"",
+									"              ]",
+									"            },",
+									"            {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"type\": {",
+									"                  \"type\": \"string\"",
+									"                },",
+									"                \"identifier\": {",
+									"                  \"type\": \"string\"",
+									"                }",
+									"              },",
+									"              \"required\": [",
+									"                \"type\",",
+									"                \"identifier\"",
+									"              ]",
+									"            }",
+									"          ]",
+									"        },",
+									"        \"readingModes\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"text\": {",
+									"              \"type\": \"boolean\"",
+									"            },",
+									"            \"image\": {",
+									"              \"type\": \"boolean\"",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"text\",",
+									"            \"image\"",
+									"          ]",
+									"        },",
+									"        \"pageCount\": {",
+									"          \"type\": \"integer\"",
+									"        },",
+									"        \"printedPageCount\": {",
+									"          \"type\": \"integer\"",
+									"        },",
+									"        \"printType\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"categories\": {",
+									"          \"type\": \"array\",",
+									"          \"items\": [",
+									"            {",
+									"              \"type\": \"string\"",
+									"            }",
+									"          ]",
+									"        },",
+									"        \"maturityRating\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"allowAnonLogging\": {",
+									"          \"type\": \"boolean\"",
+									"        },",
+									"        \"contentVersion\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"panelizationSummary\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"containsEpubBubbles\": {",
+									"              \"type\": \"boolean\"",
+									"            },",
+									"            \"containsImageBubbles\": {",
+									"              \"type\": \"boolean\"",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"containsEpubBubbles\",",
+									"            \"containsImageBubbles\"",
+									"          ]",
+									"        },",
+									"        \"imageLinks\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"smallThumbnail\": {",
+									"              \"type\": \"string\"",
+									"            },",
+									"            \"thumbnail\": {",
+									"              \"type\": \"string\"",
+									"            },",
+									"            \"small\": {",
+									"              \"type\": \"string\"",
+									"            },",
+									"            \"medium\": {",
+									"              \"type\": \"string\"",
+									"            },",
+									"            \"large\": {",
+									"              \"type\": \"string\"",
+									"            },",
+									"            \"extraLarge\": {",
+									"              \"type\": \"string\"",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"smallThumbnail\",",
+									"            \"thumbnail\",",
+									"            \"small\",",
+									"            \"medium\",",
+									"            \"large\",",
+									"            \"extraLarge\"",
+									"          ]",
+									"        },",
+									"        \"language\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"previewLink\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"infoLink\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"canonicalVolumeLink\": {",
+									"          \"type\": \"string\"",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"title\",",
+									"        \"authors\",",
+									"        \"publisher\",",
+									"        \"publishedDate\",",
+									"        \"description\",",
+									"        \"industryIdentifiers\",",
+									"        \"readingModes\",",
+									"        \"pageCount\",",
+									"        \"printedPageCount\",",
+									"        \"printType\",",
+									"        \"categories\",",
+									"        \"maturityRating\",",
+									"        \"allowAnonLogging\",",
+									"        \"contentVersion\",",
+									"        \"panelizationSummary\",",
+									"        \"imageLinks\",",
+									"        \"language\",",
+									"        \"previewLink\",",
+									"        \"infoLink\",",
+									"        \"canonicalVolumeLink\"",
+									"      ]",
+									"    },",
+									"    \"layerInfo\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"layers\": {",
+									"          \"type\": \"array\",",
+									"          \"items\": [",
+									"            {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"layerId\": {",
+									"                  \"type\": \"string\"",
+									"                },",
+									"                \"volumeAnnotationsVersion\": {",
+									"                  \"type\": \"string\"",
+									"                }",
+									"              },",
+									"              \"required\": [",
+									"                \"layerId\",",
+									"                \"volumeAnnotationsVersion\"",
+									"              ]",
+									"            }",
+									"          ]",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"layers\"",
+									"      ]",
+									"    },",
+									"    \"saleInfo\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"country\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"saleability\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"isEbook\": {",
+									"          \"type\": \"boolean\"",
+									"        },",
+									"        \"listPrice\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"amount\": {",
+									"              \"type\": \"number\"",
+									"            },",
+									"            \"currencyCode\": {",
+									"              \"type\": \"string\"",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"amount\",",
+									"            \"currencyCode\"",
+									"          ]",
+									"        },",
+									"        \"retailPrice\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"amount\": {",
+									"              \"type\": \"number\"",
+									"            },",
+									"            \"currencyCode\": {",
+									"              \"type\": \"string\"",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"amount\",",
+									"            \"currencyCode\"",
+									"          ]",
+									"        },",
+									"        \"buyLink\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"offers\": {",
+									"          \"type\": \"array\",",
+									"          \"items\": [",
+									"            {",
+									"              \"type\": \"object\",",
+									"              \"properties\": {",
+									"                \"finskyOfferType\": {",
+									"                  \"type\": \"integer\"",
+									"                },",
+									"                \"listPrice\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"amountInMicros\": {",
+									"                      \"type\": \"integer\"",
+									"                    },",
+									"                    \"currencyCode\": {",
+									"                      \"type\": \"string\"",
+									"                    }",
+									"                  },",
+									"                  \"required\": [",
+									"                    \"amountInMicros\",",
+									"                    \"currencyCode\"",
+									"                  ]",
+									"                },",
+									"                \"retailPrice\": {",
+									"                  \"type\": \"object\",",
+									"                  \"properties\": {",
+									"                    \"amountInMicros\": {",
+									"                      \"type\": \"integer\"",
+									"                    },",
+									"                    \"currencyCode\": {",
+									"                      \"type\": \"string\"",
+									"                    }",
+									"                  },",
+									"                  \"required\": [",
+									"                    \"amountInMicros\",",
+									"                    \"currencyCode\"",
+									"                  ]",
+									"                },",
+									"                \"giftable\": {",
+									"                  \"type\": \"boolean\"",
+									"                }",
+									"              },",
+									"              \"required\": [",
+									"                \"finskyOfferType\",",
+									"                \"listPrice\",",
+									"                \"retailPrice\",",
+									"                \"giftable\"",
+									"              ]",
+									"            }",
+									"          ]",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"country\",",
+									"        \"saleability\",",
+									"        \"isEbook\",",
+									"        \"listPrice\",",
+									"        \"retailPrice\",",
+									"        \"buyLink\",",
+									"        \"offers\"",
+									"      ]",
+									"    },",
+									"    \"accessInfo\": {",
+									"      \"type\": \"object\",",
+									"      \"properties\": {",
+									"        \"country\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"viewability\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"embeddable\": {",
+									"          \"type\": \"boolean\"",
+									"        },",
+									"        \"publicDomain\": {",
+									"          \"type\": \"boolean\"",
+									"        },",
+									"        \"textToSpeechPermission\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"epub\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"isAvailable\": {",
+									"              \"type\": \"boolean\"",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"isAvailable\"",
+									"          ]",
+									"        },",
+									"        \"pdf\": {",
+									"          \"type\": \"object\",",
+									"          \"properties\": {",
+									"            \"isAvailable\": {",
+									"              \"type\": \"boolean\"",
+									"            }",
+									"          },",
+									"          \"required\": [",
+									"            \"isAvailable\"",
+									"          ]",
+									"        },",
+									"        \"webReaderLink\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"accessViewStatus\": {",
+									"          \"type\": \"string\"",
+									"        },",
+									"        \"quoteSharingAllowed\": {",
+									"          \"type\": \"boolean\"",
+									"        }",
+									"      },",
+									"      \"required\": [",
+									"        \"country\",",
+									"        \"viewability\",",
+									"        \"embeddable\",",
+									"        \"publicDomain\",",
+									"        \"textToSpeechPermission\",",
+									"        \"epub\",",
+									"        \"pdf\",",
+									"        \"webReaderLink\",",
+									"        \"accessViewStatus\",",
+									"        \"quoteSharingAllowed\"",
+									"      ]",
+									"    }",
+									"  },",
+									"  \"required\": [",
+									"    \"kind\",",
+									"    \"id\",",
+									"    \"etag\",",
+									"    \"selfLink\",",
+									"    \"volumeInfo\",",
+									"    \"layerInfo\",",
+									"    \"saleInfo\",",
+									"    \"accessInfo\"",
+									"  ]",
+									"}",
+									"",
+									"pm.test(\"schema is valid\", () => {",
+									"    pm.expect(pm.response.to.have.jsonSchema(schema));",
+									"",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://www.googleapis.com/books/v1/volumes/YXt9CwAAQBAJ",
+							"protocol": "https",
+							"host": [
+								"www",
+								"googleapis",
+								"com"
+							],
+							"path": [
+								"books",
+								"v1",
+								"volumes",
+								"YXt9CwAAQBAJ"
+							]
+						},
+						"description": "Given a user \nWhen he searches a book by its ISBN\nThen the server returns a list of one element :  the corresponding book\nAnd returns code 200\nAnd the ISBN of the returned book matches with the searched one\nAnd the schema of the response is ok ( title, author, id, ISBN and category exist)"
+					},
+					"response": []
+				}
+			],
+			"description": "Testing request which allows to search a book by its ID.\nThis request should return only one book."
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "key",
+				"value": "",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "",
+				"type": "string"
+			},
+			{
+				"key": "in",
+				"value": "query",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "title",
+			"value": ""
+		},
+		{
+			"key": "author",
+			"value": ""
+		},
+		{
+			"key": "publisher",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ID",
+			"value": ""
+		},
+		{
+			"key": "bookId",
+			"value": ""
+		},
+		{
+			"key": "maxResults",
+			"value": "10",
+			"type": "string"
+		}
+	]
+}
