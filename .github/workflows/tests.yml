@@ -9,7 +9,7 @@ jobs:
       - name: install newman and htmlextra dependencies 
         run: npm install -g newman newman-reporter-htmlextra
       - name: Run the tests
-        run: newman run collection.json -r cli, htmlextra, junit
+        run: newman run collection.json -r cli,htmlextra,junit
       - uses: actions/upload-artifact@v2  # upload test results
         if: always()       # run this step even if previous step failed
         with:
