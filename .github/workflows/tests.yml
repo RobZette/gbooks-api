@@ -1,5 +1,5 @@
 name: Google books API tests
-on: [push]
+on: [push, workflow_dispatch]
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
