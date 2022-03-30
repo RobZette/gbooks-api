@@ -14,15 +14,15 @@ jobs:
         run: npm install -g newman -g newman-reporter-htmlextra
 
       - name: Run the tests
-        run: newman run collection.json -r cli,htmlextra,junit
+        run: newman run https://api.getpostman.com/collections/fd9ed364-b5b6-4535-9f29-5139c0fb5cf1?apikey=${{ secrets.POSTMAN_API_KEY }} -r cli,htmlextra,junit
 
       - uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: tests-results
+          name: tests-rapport-xml
           path: newman/*.xml
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: test-rapport
+          name: test-rapport-html
           path: newman/*.html
