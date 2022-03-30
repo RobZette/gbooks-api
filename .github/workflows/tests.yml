@@ -22,6 +22,7 @@ jobs:
           name: tests-results
           path: newman/*.xml
       - uses: actions/upload-artifact@v3
+        if: always()
         with:
-          name: test-rappotr
+          name: test-rapport
           path: newman/*.html

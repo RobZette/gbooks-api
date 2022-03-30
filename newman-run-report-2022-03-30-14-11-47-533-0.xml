@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Projet 2 - Test Google Books" tests="8" time="3.349">
+  <testsuite name="LIST BOOKS / Get a list of books by title" id="86fcb7b9-983c-48fa-9c6b-0f157297709e" timestamp="2022-03-30T14:11:43.240Z" tests="3" failures="0" errors="0" time="0.486">
+    <testcase name="Status code is 200" time="0.486" classname="Projet2TestGoogleBooks"/>
+    <testcase name="Check if response title contains the query" time="0.486" classname="Projet2TestGoogleBooks"/>
+    <testcase name="Book has all the required fields" time="0.486" classname="Projet2TestGoogleBooks"/>
+  </testsuite>
+  <testsuite name="LIST BOOKS / Get a list of books by author" id="ab8da27e-f69e-42e7-9d43-024d6971aa2d" timestamp="2022-03-30T14:11:43.240Z" tests="2" failures="0" errors="0" time="0.376">
+    <testcase name="Status code is 200" time="0.376" classname="Projet2TestGoogleBooks"/>
+    <testcase name="books returned have the author" time="0.376" classname="Projet2TestGoogleBooks"/>
+  </testsuite>
+  <testsuite name="LIST BOOKS / Get a list of books by publisher" id="529eb5da-f759-4aba-ae6a-cea18df32a68" timestamp="2022-03-30T14:11:43.240Z" tests="2" failures="0" errors="0" time="0.448">
+    <testcase name="Status code 200" time="0.448" classname="Projet2TestGoogleBooks"/>
+    <testcase name="Check if 'not undefined publishers' match with 'request publisher'" time="0.448" classname="Projet2TestGoogleBooks"/>
+  </testsuite>
+  <testsuite name="LIST BOOKS / Get a list of books by category" id="abdb24e9-c0c7-478f-ad96-532e1cf74c68" timestamp="2022-03-30T14:11:43.240Z" tests="3" failures="2" errors="0" time="0.624">
+    <testcase name="Status code 200" time="0.624" classname="Projet2TestGoogleBooks"/>
+    <testcase name="Books possess the searched category" time="0.624" classname="Projet2TestGoogleBooks">
+      <failure type="AssertionFailure" message="expected 'undefined' to include 'art'">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: fd9ed364-b5b6-4535-9f29-5139c0fb5cf1.]]>
+        <![CDATA[Collection name: Projet 2 - Test Google Books.]]>
+        <![CDATA[Request name: LIST BOOKS / Get a list of books by category.]]>
+        <![CDATA[Test description: Books possess the searched category.]]>
+        <![CDATA[Error message: expected 'undefined' to include 'art'.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 'undefined' to include 'art'
+   at Object.eval sandbox-script.js:2:4).]]>
+      </failure>
+    </testcase>
+    <testcase name="check if response categories array includes requested category" time="0.624" classname="Projet2TestGoogleBooks">
+      <failure type="AssertionFailure" message="expected 4 to deeply equal 3">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: fd9ed364-b5b6-4535-9f29-5139c0fb5cf1.]]>
+        <![CDATA[Collection name: Projet 2 - Test Google Books.]]>
+        <![CDATA[Request name: LIST BOOKS / Get a list of books by category.]]>
+        <![CDATA[Test description: check if response categories array includes requested category.]]>
+        <![CDATA[Error message: expected 4 to deeply equal 3.]]>
+        <![CDATA[Stacktrace: AssertionError: expected 4 to deeply equal 3
+   at Object.eval sandbox-script.js:3:4).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="LIST BOOKS / Get a book by ISBN" id="0fd43276-fd48-4a36-a9e6-d27a68e5076e" timestamp="2022-03-30T14:11:43.240Z" tests="2" failures="0" errors="0" time="0.477">
+    <testcase name="Status code is 200" time="0.477" classname="Projet2TestGoogleBooks"/>
+    <testcase name="Verify the ISBN" time="0.477" classname="Projet2TestGoogleBooks"/>
+  </testsuite>
+  <testsuite name="LIST BOOKS / Get a list of books by title and sorted" id="25b668e5-0e2e-41e2-9f8e-967f60eb4edc" timestamp="2022-03-30T14:11:43.240Z" tests="2" failures="1" errors="0" time="0.638">
+    <testcase name="Status code is 200" time="0.638" classname="Projet2TestGoogleBooks"/>
+    <testcase name="books are sorted correctly" time="0.638" classname="Projet2TestGoogleBooks">
+      <failure type="AssertionFailure" message="expected [ Array(10) ] to deeply equal [ Array(10) ]">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: fd9ed364-b5b6-4535-9f29-5139c0fb5cf1.]]>
+        <![CDATA[Collection name: Projet 2 - Test Google Books.]]>
+        <![CDATA[Request name: LIST BOOKS / Get a list of books by title and sorted.]]>
+        <![CDATA[Test description: books are sorted correctly.]]>
+        <![CDATA[Error message: expected [ Array(10) ] to deeply equal [ Array(10) ].]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ Array(10) ] to deeply equal [ Array(10) ]
+   at Object.eval sandbox-script.js:2:6).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="GET BOOK / Get a book by its ID" id="403cfe7d-c07c-41f8-b7ac-3c35650376f8" timestamp="2022-03-30T14:11:43.240Z" tests="3" failures="0" errors="0" time="0.075">
+    <testcase name="Status code is 200" time="0.075" classname="Projet2TestGoogleBooks"/>
+    <testcase name="reponse ID checks with request ID" time="0.075" classname="Projet2TestGoogleBooks"/>
+    <testcase name="Book has all the required fields" time="0.075" classname="Projet2TestGoogleBooks"/>
+  </testsuite>
+  <testsuite name="GET BOOK / Get a book by its ID Copy" id="ed3142ab-df37-4480-ae22-67d2f491b24c" timestamp="2022-03-30T14:11:43.240Z" tests="2" failures="0" errors="0" time="0.225">
+    <testcase name="Status code is 200" time="0.225" classname="Projet2TestGoogleBooks"/>
+    <testcase name="schema is valid" time="0.225" classname="Projet2TestGoogleBooks"/>
+  </testsuite>
+</testsuites>
