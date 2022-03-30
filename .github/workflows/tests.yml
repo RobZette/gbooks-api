@@ -8,7 +8,7 @@ jobs:
     steps:
 
       - name: Check out repository code
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: install newman and htmlextra dependencies 
         run: npm install -g newman -g newman-reporter-htmlextra
